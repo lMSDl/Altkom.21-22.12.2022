@@ -1,8 +1,10 @@
-﻿namespace Models
+﻿using System.Collections.ObjectModel;
+
+namespace Models
 {
     public class Order : Entity
     {
-        public DateTime DateTime { get; set; }
-        public ICollection<Product> Products { get; set; } = new List<Product>();
+        public virtual DateTime DateTime { get; set; }
+        public virtual IList<Product> Products { get; set; } = new ObservableCollection<Product>();
     }
 }
