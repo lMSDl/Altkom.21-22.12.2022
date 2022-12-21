@@ -15,7 +15,7 @@ var contextOptions = new DbContextOptionsBuilder<Context>()
 var context = new Context(contextOptions);
 
 context.Database.EnsureDeleted();
-context.Database.EnsureCreated();
+context.Database.Migrate();
 
 
 var order = new Order();

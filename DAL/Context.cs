@@ -5,14 +5,12 @@ namespace DAL
 {
     public class Context : DbContext
     {
-        public Context(DbContextOptions options) : base(options)
-        {
-        }
-
         public Context()
         {
         }
-
+        public Context(DbContextOptions options) : base(options)
+        {
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,7 +31,7 @@ namespace DAL
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
 
             //włączenie śledzenia zmian przez notyfikacje
-            modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangedNotifications);
+            //modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangedNotifications);
         }
     }
 }
