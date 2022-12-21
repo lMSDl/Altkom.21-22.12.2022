@@ -31,6 +31,9 @@ namespace DAL
 
             //zaczytujemy wszystkie pliki konfiguracyjne ze wskazanego assembly
             modelBuilder.ApplyConfigurationsFromAssembly(GetType().Assembly);
+
+            //włączenie śledzenia zmian przez notyfikacje
+            modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangedNotifications);
         }
     }
 }

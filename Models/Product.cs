@@ -8,9 +8,20 @@ namespace Models
 {
     public class Product : Entity
     {
-        public string Name { get; set; }
-        public float Price { get; set; }
+        private string name;
+        private float price;
 
-        public IEnumerable<Order>? Orders { get; set; }
+        public virtual string Name { get => name; set => Set(value, out name); }
+        public virtual float Price
+        {
+            get => price;
+            set
+            {
+                price = value;
+                OnPropertyChanged();
+            }
+        }
+
+        //public IEnumerable<Order>? Orders { get; set; }
     }
 }
