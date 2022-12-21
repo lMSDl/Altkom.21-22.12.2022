@@ -13,6 +13,8 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+            //Token współbieżności za pomocą sygnatury czasowej
+            builder.Property(x => x.Timestamp).IsRowVersion();
         }
     }
 }

@@ -13,6 +13,8 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
+            //Token współbieżności
+            builder.Property(x => x.DateTime).IsConcurrencyToken();
         }
     }
 }

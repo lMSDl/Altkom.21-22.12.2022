@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Models
         private float price;
 
         public virtual string Name { get => name; set => Set(value, out name); }
+
         public virtual float Price
         {
             get => price;
@@ -23,5 +25,10 @@ namespace Models
         }
 
         public IEnumerable<Order>? Orders { get; set; }
+
+
+        //Token współbieżności za pomocą sygnatury czasowej
+        //[Timestamp]
+        public byte[] Timestamp { get; set; }
     }
 }
