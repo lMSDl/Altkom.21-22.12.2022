@@ -24,7 +24,7 @@ namespace Models
             }
         }
 
-        public IEnumerable<Order>? Orders { get; set; }
+        public virtual IEnumerable<Order>? Orders { get; set; }
 
 
         //Token współbieżności za pomocą sygnatury czasowej
