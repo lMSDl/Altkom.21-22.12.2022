@@ -21,6 +21,8 @@ context.Database.EnsureCreated();
 var order = new Order();
 var product = new Product() { Name = "Marchewka"};
 order.Products.Add(product);
+//order.Products.Add(context.CreateProxy<Product>(x => x.Name = "Marchewka"));
+
 
 Console.WriteLine("Order: " + context.Entry(order).State);
 Console.WriteLine("Product: " + context.Entry(product).State);
