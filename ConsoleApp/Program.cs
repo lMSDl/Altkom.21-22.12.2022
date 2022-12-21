@@ -18,69 +18,59 @@ using (var context = new Context(contextOptions))
     context.Database.Migrate();
 }
 
-using (var context = new Context(contextOptions))
-{
-    var product = new Product() { Name = "Marchewka" };
-    context.Add(product);
-    context.SaveChanges();
-    //context.ChangeTracker.Clear();
-}
+var products = Enumerable.Range(100, 50).Select(x => new Product { Name = $"Product {x}", Price = 1.23f * x }).ToList();
+var orders = Enumerable.Range(0, 5).Select(x => new Order() { DateTime = DateTime.Now.AddMinutes(-3.21 * x) }).ToList();
 
 using (var context = new Context(contextOptions))
 {
-    var product = context.Set<Product>().First();
-    
-    product.Price += 10;
-    //product.Name = "abc";
-
-    var saved = false;
-    while (!saved)
+    using (var transaction = context.Database.BeginTransaction())
     {
-        try
+        context.RandomFail = true;
+
+
+        for (int i = 0; i < 5; i++)
         {
-            context.SaveChanges();
-            saved = true;
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            foreach (var entry in ex.Entries)
+
+            string savepoint = i.ToString();
+            transaction.CreateSavepoint(savepoint);
+
+            try
             {
-                //wartości stanu jaki chcemy wprowadzić do bazy danych
-                var currentValues = entry.CurrentValues;
-                //wartości, które aktualnie znajdują się w bazie danych
-                var databaseValues = entry.GetDatabaseValues();
-                //wartości, które zostały pobrane z bazy
-                var originalValues = entry.OriginalValues;
+                var subProducts = products.Skip(i * 10).Take(10).ToList();
 
-
-                switch (entry.Entity)
+                foreach (var product in subProducts)
                 {
-                    case Product:
-                        {
-                            var property = currentValues.Properties.SingleOrDefault(x => x.Name == nameof(Product.Price));
-                            var currentPricePropertyValue = (float)currentValues[property];
-                            var databasePricePropertyValue = (float)databaseValues[property];
-                            var originalPricePropertyValue = (float)originalValues[property];
-
-                            currentValues[property] = databasePricePropertyValue + (currentPricePropertyValue - originalPricePropertyValue);
-
-                            //aktualizacja wartości oryginalnych do zgodności z wartościami w brazie danych w celu aktualizacji tokena konkurencyjności
-                            entry.OriginalValues.SetValues(databaseValues);
-                            break;
-                        }
-
-                    case Order:
-                        break;
+                    context.Add(product);
+                    context.SaveChanges();
                 }
+
+                orders[i].Products = subProducts;
+                context.Add(orders[i]);
+                context.SaveChanges();
+            }
+            catch
+            {
+                //wycofanie zmian
+                //transaction.Rollback();
+                //wyucofanie zmian do wskazanego savepointa
+                transaction.RollbackToSavepoint(savepoint);
+                context.ChangeTracker.Clear();
             }
 
         }
+
+
+        /*var dbProducts = context.Set<Product>().ToList();
+        if (dbProducts.Any())
+        {
+            dbProducts.First().Name = "Jabłko";
+            context.SaveChanges();
+        }*/
+        
+        transaction.Commit();
     }
 
-
-
 }
-
 
 
 
@@ -174,4 +164,70 @@ using (var context = new Context(contextOptions))
     Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
 
     context.SaveChanges();
+}
+
+static void ConcurrencyToken(DbContextOptions<Context> contextOptions)
+{
+    using (var context = new Context(contextOptions))
+    {
+        var product = new Product() { Name = "Marchewka" };
+        context.Add(product);
+        context.SaveChanges();
+        //context.ChangeTracker.Clear();
+    }
+
+    using (var context = new Context(contextOptions))
+    {
+        var product = context.Set<Product>().First();
+
+        product.Price += 10;
+        //product.Name = "abc";
+
+        var saved = false;
+        while (!saved)
+        {
+            try
+            {
+                context.SaveChanges();
+                saved = true;
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                foreach (var entry in ex.Entries)
+                {
+                    //wartości stanu jaki chcemy wprowadzić do bazy danych
+                    var currentValues = entry.CurrentValues;
+                    //wartości, które aktualnie znajdują się w bazie danych
+                    var databaseValues = entry.GetDatabaseValues();
+                    //wartości, które zostały pobrane z bazy
+                    var originalValues = entry.OriginalValues;
+
+
+                    switch (entry.Entity)
+                    {
+                        case Product:
+                            {
+                                var property = currentValues.Properties.SingleOrDefault(x => x.Name == nameof(Product.Price));
+                                var currentPricePropertyValue = (float)currentValues[property];
+                                var databasePricePropertyValue = (float)databaseValues[property];
+                                var originalPricePropertyValue = (float)originalValues[property];
+
+                                currentValues[property] = databasePricePropertyValue + (currentPricePropertyValue - originalPricePropertyValue);
+
+                                //aktualizacja wartości oryginalnych do zgodności z wartościami w brazie danych w celu aktualizacji tokena konkurencyjności
+                                entry.OriginalValues.SetValues(databaseValues);
+                                break;
+                            }
+
+                        case Order:
+                            break;
+                    }
+                }
+
+            }
+        }
+
+
+
+    }
 }

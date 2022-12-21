@@ -33,5 +33,16 @@ namespace DAL
             //włączenie śledzenia zmian przez notyfikacje
             //modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangedNotifications);
         }
+
+        public bool RandomFail { get; set; }
+        public override int SaveChanges()
+        {
+            if(RandomFail && new Random().Next(1, 25) == 1)
+            {
+                throw new Exception();
+            }
+
+            return base.SaveChanges();
+        }
     }
 }
