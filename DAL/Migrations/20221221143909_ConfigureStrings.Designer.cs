@@ -4,6 +4,7 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20221221143909_ConfigureStrings")]
+    partial class ConfigureStrings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +38,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Order");
                 });
 
             modelBuilder.Entity("Models.Person", b =>
@@ -53,7 +55,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("Persons");
+                    b.ToTable("Person");
                 });
 
             modelBuilder.Entity("Models.Product", b =>
@@ -79,7 +81,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("OrderProduct", b =>
@@ -94,7 +96,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("OrderProducts");
+                    b.ToTable("OrderProduct");
                 });
 
             modelBuilder.Entity("OrderProduct", b =>
