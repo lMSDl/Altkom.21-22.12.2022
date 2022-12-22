@@ -23,7 +23,9 @@ namespace DAL.Configurations
                                                              x => Converter(x))*/
                                                 //.HasConversion(new EnumToStringConverter<OrderTypes>());
                                                 .HasConversion<string>();
-                }
+            builder.Property(x => x.ModifiedAt);        
+        
+        }
 
         OrderTypes Converter(string input)
         {

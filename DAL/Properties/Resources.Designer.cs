@@ -61,6 +61,24 @@ namespace DAL.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CREATE TRIGGER modifiedAt
+        ///ON [Order]
+        ///AFTER INSERT, UPDATE
+        ///AS
+        ///	UPDATE [Order] SET ModifiedAt = (SELECT getdate())
+        ///	FROM [Order] x
+        ///		INNER JOIN inserted y
+        ///		ON x.Id = y.Id
+        ///GO
+        ///.
+        /// </summary>
+        internal static string OrderModifiedTrigger_UP {
+            get {
+                return ResourceManager.GetString("OrderModifiedTrigger_UP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DROP PROCEDURE OrdersSummary.
         /// </summary>
         internal static string OrdersSummary_DOWN {
