@@ -28,5 +28,6 @@ namespace Models
 
         public virtual IList<Product> Products { get => _lazyLoader?.Load(this, ref products) ?? products; set => products = value; }
 
+        public OrderTypes OrderType { get; set; }
     }
 }

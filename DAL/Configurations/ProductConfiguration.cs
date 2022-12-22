@@ -21,6 +21,9 @@ namespace DAL.Configurations
             builder.Property(x => x.Info).HasComputedColumnSql("[s_Name] + ' ' + Str([Price]) + 'zł'", stored: true);
 
             builder.Property(x => x.Price).HasDefaultValueSql("NEXT VALUE FOR sequences.ProductPrice");
+
+            builder.Property(x => x.Name).HasConversion(x => Convert.ToBase64String(Encoding.Default.GetBytes(x)),
+                                                        x => Encoding.Default.GetString(Convert.FromBase64String(x)));
         }
     }
 }
