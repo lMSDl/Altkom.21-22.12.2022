@@ -30,6 +30,8 @@ namespace DAL.Configurations
                 .HasField("alamakota");
 
             builder.HasOne(x => x.ProductDetails).WithOne().HasForeignKey<ProductDetails>(x => x.Id);
+
+            builder.Property(x => x.Description).IsSparse();
         }
     }
 }

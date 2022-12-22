@@ -41,5 +41,7 @@ namespace Models
         public virtual Manufacturer? Manufacturer { get; set; }
 
         public virtual ProductDetails? ProductDetails { get; set; }
+
+        public string? Description { get; set; }
     }
 }

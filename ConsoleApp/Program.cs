@@ -26,15 +26,8 @@ using (var context = new Context(contextOptions))
 Transactions(contextOptions);
 
 
-using (var context = new Context(contextOptions))
-{
-    var products = context.Set<Product>().ToList();
 
-    context.Entry(products.First()).Reference(x => x.ProductDetails).Load();
-}
-
-
-    static void ChangeTacker(Context context)
+static void ChangeTacker(Context context)
 {
     var order = new Order();
     var product = new Product() { Name = "Marchewka" };
@@ -221,6 +214,7 @@ static void Transactions(DbContextOptions<Context> contextOptions)
 
                     foreach (var product in subProducts)
                     {
+                        //product.Description = "aa";
                         context.Add(product);
                         context.SaveChanges();
                     }
@@ -409,5 +403,17 @@ static void TopologySuite(DbContextOptions<Context> contextOptions)
         orders = context.Set<Order>().Where(x => polygon.Intersects(x.DeliveryPoint)).ToList();
         orders = context.Set<Order>().Where(x => point.IsWithinDistance(x.DeliveryPoint, 125000)).ToList();
 
+    }
+}
+
+static void SplitTable(DbContextOptions<Context> contextOptions)
+{
+    using (var context = new Context(contextOptions))
+    {
+        var products = context.Set<Product>().ToList();
+
+        context.Entry(products.First()).Reference(x => x.ProductDetails).Load();
+
+        products = context.Set<Product>().Include(x => x.ProductDetails).ToList();
     }
 }
