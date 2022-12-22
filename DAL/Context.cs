@@ -1,12 +1,21 @@
 ﻿using DAL.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Models;
 using System.Security.Cryptography.X509Certificates;
 
 namespace DAL
 {
     public class Context : DbContext
     {
+        public static Func<Context, DateTime, DateTime, IEnumerable<Order>> GetOrders { get; } = 
+            EF.CompileQuery((Context context, DateTime from, DateTime to) => 
+                context.Set<Order>().Include(x => x.Products)
+                                    .Where(x => x.DateTime >= from)
+                                    .Where(x => x.DateTime <= to)
+            );
+
+
                 public Context()
         {
         }
@@ -17,7 +26,7 @@ namespace DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if(!optionsBuilder.IsConfigured)
-                optionsBuilder.UseSqlServer();
+                optionsBuilder.UseSqlServer(x => x.UseNetTopologySuite());
 
             base.OnConfiguring(optionsBuilder);
         }

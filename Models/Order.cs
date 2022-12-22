@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Infrastructure;
+using NetTopologySuite.Geometries;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -30,5 +31,7 @@ namespace Models
 
         public OrderTypes OrderType { get; set; }
         public DateTime ModifiedAt { get; }
+
+        public Point? DeliveryPoint { get; set; }
     }
 }
