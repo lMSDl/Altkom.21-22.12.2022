@@ -18,7 +18,10 @@ namespace DAL.Configurations
             //builder.Property(x => x.CreatedAt).HasDefaultValue(DateTime.UtcNow);
             builder.Property(x => x.CreatedAt).HasDefaultValueSql("getdate()");
 
-            builder.HasQueryFilter(x => !x.IsDeleted);
+            builder.Property<bool>("IsDeleted");
+
+            //builder.HasQueryFilter(x => !x.IsDeleted);
+            builder.HasQueryFilter(x => !EF.Property<bool>(x, "IsDeleted"));
         }
     }
 }

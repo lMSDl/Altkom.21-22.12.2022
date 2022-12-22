@@ -35,5 +35,9 @@ namespace Models
         //Token współbieżności za pomocą sygnatury czasowej
         //[Timestamp]
         public byte[] Timestamp { get; set; }
+
+        //shadow property
+        /*public int? ManufacturerId { get; set; }*/
+        public virtual Manufacturer? Manufacturer { get; set; }
     }
 }

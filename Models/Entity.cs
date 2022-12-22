@@ -8,7 +8,7 @@ namespace Models
         public virtual int Id { get; set; }
 
         public DateTime CreatedAt { get; }
-        public bool IsDeleted { get; set; }
+        //public bool IsDeleted { get; set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

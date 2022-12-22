@@ -24,31 +24,24 @@ using (var context = new Context(contextOptions))
 
 Transactions(contextOptions);
 
-
 using (var context = new Context(contextOptions))
 {
-    var order = context.Set<Order>().First();
-    order.IsDeleted = true;
+    var product = context.Set<Product>().First();
+
+    product.Manufacturer = new Manufacturer() { Name = "Altkom" };
+
+    product = context.Set<Product>().Skip(1).First();
+    context.Entry(product).Property("ManufacturerId").CurrentValue = 1;
     context.SaveChanges();
-}
 
-using (var context = new Context(contextOptions))
-{
-    var order = context.Set<Order>()/*.Where(x => !x.IsDeleted)*/.First();
-
-    var product = context.Set<Product>().Include(x => x.Orders/*.Where(x => !x.IsDeleted)*/).First();
-
-    context.ChangeTracker.Clear();
-
-    context.Attach(product);
-    context.Entry(product).Collection(x => x.Orders).Load();
+    var products = context.Set<Product>().Where(x => EF.Property<int?>(x, "ManufacturerId") != null).ToList();
 
 }
 
+GlobalFilters(contextOptions);
 
 
-
-static void ChangeTacker(Context context)
+    static void ChangeTacker(Context context)
 {
     var order = new Order();
     var product = new Product() { Name = "Marchewka" };
@@ -238,7 +231,7 @@ static void Transactions(DbContextOptions<Context> contextOptions)
                     context.Add(orders[i]);
                     context.SaveChanges();
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     //wycofanie zmian
                     //transaction.Rollback();
@@ -308,5 +301,29 @@ static void Loading(DbContextOptions<Context> contextOptions)
     void DoSthWithOrderProducts(Order order)
     {
         order.Products.ToList();
+    }
+}
+
+static void GlobalFilters(DbContextOptions<Context> contextOptions)
+{
+    using (var context = new Context(contextOptions))
+    {
+        var order = context.Set<Order>().First();
+        //order.IsDeleted = true;
+        context.Entry(order).Property("IsDeleted").CurrentValue = true;
+        context.SaveChanges();
+    }
+
+    using (var context = new Context(contextOptions))
+    {
+        var order = context.Set<Order>()/*.Where(x => !x.IsDeleted)*/.First();
+
+        var product = context.Set<Product>().Include(x => x.Orders/*.Where(x => !x.IsDeleted)*/).First();
+
+        context.ChangeTracker.Clear();
+
+        context.Attach(product);
+        context.Entry(product).Collection(x => x.Orders).Load();
+
     }
 }
