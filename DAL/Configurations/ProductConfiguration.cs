@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace DAL.Configurations
 {
-    internal class ProductConfiguration : IEntityTypeConfiguration<Product>
+    internal class ProductConfiguration : EntityConfiguration<Product>
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
+            base.Configure(builder);
             //Token współbieżności za pomocą sygnatury czasowej
-            builder.Property(x => x.Timestamp).IsRowVersion();
+            //builder.Property(x => x.Timestamp).IsRowVersion();
         }
     }
 }

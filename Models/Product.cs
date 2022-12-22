@@ -29,6 +29,6 @@ namespace Models
 
         //Token współbieżności za pomocą sygnatury czasowej
         //[Timestamp]
-        public byte[] Timestamp { get; set; }
+        //public byte[] Timestamp { get; set; }
     }
 }

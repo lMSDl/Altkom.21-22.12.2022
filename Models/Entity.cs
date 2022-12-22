@@ -7,6 +7,8 @@ namespace Models
     {
         public virtual int Id { get; set; }
 
+        public DateTime CreatedAt { get; }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public void Set<T>(T value, out T output, [CallerMemberName] string propertyName = "")
