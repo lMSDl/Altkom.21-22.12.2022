@@ -23,20 +23,12 @@ using (var context = new Context(contextOptions))
 }
 
 Transactions(contextOptions);
-
-//var userInput = "-1; DROP TABLE Person";
-var userInput = "-1";
 using (var context = new Context(contextOptions))
 {
-    //context.Database.ExecuteSqlRaw("EXEC ChangePrice @p0", userInput);
-    context.Database.ExecuteSqlInterpolated($"EXEC ChangePrice {userInput}");
-
-    var summary = context.Set<OrdersSummary>().FromSqlRaw("EXEC OrdersSummary @p0", 2);
+    var summary = context.Set<OrdersSummary>().ToList();
 }
 
-
-
-    static void ChangeTacker(Context context)
+static void ChangeTacker(Context context)
 {
     var order = new Order();
     var product = new Product() { Name = "Marchewka" };
@@ -340,4 +332,17 @@ static void SHadowProperties(DbContextOptions<Context> contextOptions)
     }
 
     GlobalFilters(contextOptions);
+}
+
+static void Procedures(DbContextOptions<Context> contextOptions)
+{
+    //var userInput = "-1; DROP TABLE Person";
+    var userInput = "-1";
+    using (var context = new Context(contextOptions))
+    {
+        //context.Database.ExecuteSqlRaw("EXEC ChangePrice @p0", userInput);
+        context.Database.ExecuteSqlInterpolated($"EXEC ChangePrice {userInput}");
+
+        var summary = context.Set<OrdersSummary>().FromSqlRaw("EXEC OrdersSummary @p0", 2);
+    }
 }

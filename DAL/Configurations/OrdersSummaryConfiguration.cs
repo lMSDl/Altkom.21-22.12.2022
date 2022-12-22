@@ -15,7 +15,8 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<OrdersSummary> builder)
         {
-            builder.ToTable(name: null);
+            //builder.ToTable(name: null);
+            builder.ToView("View_OrdersSummary");
         }
     }
 }

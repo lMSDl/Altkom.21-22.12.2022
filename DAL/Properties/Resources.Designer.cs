@@ -86,5 +86,28 @@ namespace DAL.Properties {
                 return ResourceManager.GetString("OrdersSummary_UP", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DROP VIEW View_OrdersSummary.
+        /// </summary>
+        internal static string OrdersSummaryView_DOWN {
+            get {
+                return ResourceManager.GetString("OrdersSummaryView_DOWN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CREATE VIEW View_OrdersSummary AS
+        ///	SELECT o.Id, o.[DateTime], COUNT(op.ProductsId) AS Count
+        ///	FROM [Order] as o
+        ///	JOIN OrderProduct as op ON op.OrdersId = o.Id
+        ///	GROUP BY o.Id, o.[DateTime]
+        ///.
+        /// </summary>
+        internal static string OrdersSummaryView_UP {
+            get {
+                return ResourceManager.GetString("OrdersSummaryView_UP", resourceCulture);
+            }
+        }
     }
 }
