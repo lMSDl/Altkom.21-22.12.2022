@@ -26,9 +26,8 @@ namespace Models
 
         public virtual IEnumerable<Order>? Orders { get; set; }
 
-
         //Token współbieżności za pomocą sygnatury czasowej
         //[Timestamp]
-        //public byte[] Timestamp { get; set; }
+        public byte[] Timestamp { get; set; }
     }
 }

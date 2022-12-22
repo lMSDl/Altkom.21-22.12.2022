@@ -11,7 +11,7 @@ namespace DAL.Configurations
 {
     internal class OrderConfiguration : EntityConfiguration<Order>
     {
-        public void Configure(EntityTypeBuilder<Order> builder)
+        public override void Configure(EntityTypeBuilder<Order> builder)
         {
             base.Configure(builder);
 

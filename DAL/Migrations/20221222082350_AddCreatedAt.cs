@@ -9,10 +9,6 @@ namespace DAL.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Timestamp",
-                table: "Products");
-
             migrationBuilder.AddColumn<DateTime>(
                 name: "CreatedAt",
                 table: "Products",
@@ -37,14 +33,6 @@ namespace DAL.Migrations
             migrationBuilder.DropColumn(
                 name: "CreatedAt",
                 table: "Orders");
-
-            migrationBuilder.AddColumn<byte[]>(
-                name: "Timestamp",
-                table: "Products",
-                type: "rowversion",
-                rowVersion: true,
-                nullable: false,
-                defaultValue: new byte[0]);
         }
     }
 }
