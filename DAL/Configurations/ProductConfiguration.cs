@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +25,10 @@ namespace DAL.Configurations
 
             builder.Property(x => x.Name).HasConversion(x => Convert.ToBase64String(Encoding.Default.GetBytes(x)),
                                                         x => Encoding.Default.GetString(Convert.FromBase64String(x)));
+
+            builder.Property(x => x.Price).UsePropertyAccessMode(PropertyAccessMode.Field)
+                .HasField("alamakota");
+
         }
     }
 }

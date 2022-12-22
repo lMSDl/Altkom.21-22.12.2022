@@ -10,16 +10,19 @@ namespace Models
     public class Product : Entity
     {
         private string name;
-        private float price;
+        //private float price;
+        //private float _price;
+        //private float m_price;
+        private float alamakota;
 
         public virtual string Name { get => name; set => Set(value, out name); }
 
         public virtual float Price
         {
-            get => price;
+            get => alamakota;
             set
             {
-                price = value;
+                alamakota = value;
                 OnPropertyChanged();
             }
         }

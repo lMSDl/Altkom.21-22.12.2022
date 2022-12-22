@@ -35,6 +35,8 @@ namespace DAL
             //włączenie śledzenia zmian przez notyfikacje
             //modelBuilder.HasChangeTrackingStrategy(ChangeTrackingStrategy.ChangedNotifications);
 
+            //ustawienie sposobu dostępu do właściwości encji
+            //modelBuilder.UsePropertyAccessMode(PropertyAccessMode.Field);
 
             modelBuilder.Model.GetEntityTypes()
                               .SelectMany(x => x.GetProperties())

@@ -238,7 +238,7 @@ static void Transactions(DbContextOptions<Context> contextOptions)
                     context.Add(orders[i]);
                     context.SaveChanges();
                 }
-                catch
+                catch(Exception e)
                 {
                     //wycofanie zmian
                     //transaction.Rollback();
