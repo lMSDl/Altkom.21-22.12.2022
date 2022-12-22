@@ -17,6 +17,8 @@ namespace DAL.Configurations
             base.Configure(builder);
             //Token współbieżności za pomocą sygnatury czasowej
             builder.Property(x => x.Timestamp).IsRowVersion();
+
+            builder.Property(x => x.Info).HasComputedColumnSql("[s_Name] + ' ' + Str([Price]) + 'zł'", stored: true);
         }
     }
 }
