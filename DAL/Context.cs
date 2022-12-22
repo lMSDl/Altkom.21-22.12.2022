@@ -71,6 +71,14 @@ namespace DAL
                 {
                     x.SetTableName(x.GetDefaultTableName() + "s");
                 });
+
+
+            modelBuilder.HasSequence<int>("ProductPrice", "sequences")
+                .StartsAt(100)
+                .HasMax(300)
+                .HasMin(10)
+                .IsCyclic()
+                .IncrementsBy(33);
         }
 
 

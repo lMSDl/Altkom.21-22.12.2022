@@ -19,6 +19,8 @@ namespace DAL.Configurations
             builder.Property(x => x.Timestamp).IsRowVersion();
 
             builder.Property(x => x.Info).HasComputedColumnSql("[s_Name] + ' ' + Str([Price]) + 'zł'", stored: true);
+
+            builder.Property(x => x.Price).HasDefaultValueSql("NEXT VALUE FOR sequences.ProductPrice");
         }
     }
 }

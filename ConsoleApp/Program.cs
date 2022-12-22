@@ -231,7 +231,7 @@ static void ConcurrencyToken(DbContextOptions<Context> contextOptions)
 
 static void Transactions(DbContextOptions<Context> contextOptions)
 {
-    var products = Enumerable.Range(100, 50).Select(x => new Product { Name = $"Product {x}", Price = 1.23f * x }).ToList();
+    var products = Enumerable.Range(100, 50).Select(x => new Product { Name = $"Product {x}"/*, Price = 1.23f * x*/ }).ToList();
     var orders = Enumerable.Range(0, 5).Select(x => new Order() { DateTime = DateTime.Now.AddMinutes(-3.21 * x) }).ToList();
 
     using (var context = new Context(contextOptions))
@@ -239,7 +239,7 @@ static void Transactions(DbContextOptions<Context> contextOptions)
         using (var transaction = context.Database.BeginTransaction(/*System.Data.IsolationLevel.Serializable*/))
         {
 
-            context.RandomFail = true;
+            //context.RandomFail = true;
 
 
             for (int i = 0; i < 5; i++)
