@@ -13,8 +13,12 @@ namespace DAL.Configurations
     {
         public virtual void Configure(EntityTypeBuilder<T> builder)
         {
+            //builder.ToTable(typeof(T).Name + 's');
+
             //builder.Property(x => x.CreatedAt).HasDefaultValue(DateTime.UtcNow);
             builder.Property(x => x.CreatedAt).HasDefaultValueSql("getdate()");
+
+            builder.HasQueryFilter(x => !x.IsDeleted);
         }
     }
 }

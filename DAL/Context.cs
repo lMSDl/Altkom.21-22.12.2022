@@ -65,12 +65,12 @@ namespace DAL
                                   x.SetValueConverter(new EnumToStringConverter<Roles>());
                               });*/
 
-            modelBuilder.Model.GetEntityTypes()
+            /*modelBuilder.Model.GetEntityTypes()
                 .ToList()
                 .ForEach(x =>
                 {
                     x.SetTableName(x.GetDefaultTableName() + "s");
-                });
+                });*/
 
 
             modelBuilder.HasSequence<int>("ProductPrice", "sequences")

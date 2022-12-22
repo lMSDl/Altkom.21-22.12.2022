@@ -24,50 +24,27 @@ using (var context = new Context(contextOptions))
 
 Transactions(contextOptions);
 
-Order order;
+
 using (var context = new Context(contextOptions))
 {
-    //Eager loading
-    //order = context.Set<Order>().Include(x => x.Products).ThenInclude(x => x.Orders).First();
-
-    //Explicit loading
-    //order = context.Set<Order>().First();
-    order = new Order() { Id = 1 };
-    context.Attach(order);
-    //context.Entry(order).Property(x => x.<property z referencją>).Load();
-    context.Entry(order).Collection(x => x.Products).Load();
-
-    DoSthWithOrderProducts(order);
+    var order = context.Set<Order>().First();
+    order.IsDeleted = true;
+    context.SaveChanges();
 }
 
 using (var context = new Context(contextOptions))
 {
-    context.Set<Order>().Load();
-    context.Set<Product>().Load();
-    context.Set<Dictionary<string, object>>("OrderProduct").Load();
+    var order = context.Set<Order>()/*.Where(x => !x.IsDeleted)*/.First();
 
-    order = context.Set<Order>().First();
+    var product = context.Set<Product>().Include(x => x.Orders/*.Where(x => !x.IsDeleted)*/).First();
+
+    context.ChangeTracker.Clear();
+
+    context.Attach(product);
+    context.Entry(product).Collection(x => x.Orders).Load();
+
 }
 
-//Lazy loading
-using (var context = new Context(contextOptions))
-{
-    order = context.Set<Order>().First();
-
-    DoSthWithOrderProducts(order);
-}
-using (var context = new Context(contextOptions))
-{
-    var product = context.Set<Product>().First();
-
-    product.Orders.ToList();
-}
-
-
-void DoSthWithOrderProducts(Order order)
-{
-    order.Products.ToList();
-}
 
 
 
@@ -283,5 +260,53 @@ static void Transactions(DbContextOptions<Context> contextOptions)
             transaction.Commit();
         }
 
+    }
+}
+
+static void Loading(DbContextOptions<Context> contextOptions)
+{
+    Order order;
+    using (var context = new Context(contextOptions))
+    {
+        //Eager loading
+        //order = context.Set<Order>().Include(x => x.Products).ThenInclude(x => x.Orders).First();
+
+        //Explicit loading
+        //order = context.Set<Order>().First();
+        order = new Order() { Id = 1 };
+        context.Attach(order);
+        //context.Entry(order).Property(x => x.<property z referencją>).Load();
+        context.Entry(order).Collection(x => x.Products).Load();
+
+        DoSthWithOrderProducts(order);
+    }
+
+    using (var context = new Context(contextOptions))
+    {
+        context.Set<Order>().Load();
+        context.Set<Product>().Load();
+        context.Set<Dictionary<string, object>>("OrderProduct").Load();
+
+        order = context.Set<Order>().First();
+    }
+
+    //Lazy loading
+    using (var context = new Context(contextOptions))
+    {
+        order = context.Set<Order>().First();
+
+        DoSthWithOrderProducts(order);
+    }
+    using (var context = new Context(contextOptions))
+    {
+        var product = context.Set<Product>().First();
+
+        product.Orders.ToList();
+    }
+
+
+    void DoSthWithOrderProducts(Order order)
+    {
+        order.Products.ToList();
     }
 }
