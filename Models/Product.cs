@@ -39,5 +39,7 @@ namespace Models
         //shadow property
         /*public int? ManufacturerId { get; set; }*/
         public virtual Manufacturer? Manufacturer { get; set; }
+
+        public virtual ProductDetails? ProductDetails { get; set; }
     }
 }

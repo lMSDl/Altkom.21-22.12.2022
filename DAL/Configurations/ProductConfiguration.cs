@@ -29,6 +29,7 @@ namespace DAL.Configurations
             builder.Property(x => x.Price).UsePropertyAccessMode(PropertyAccessMode.Field)
                 .HasField("alamakota");
 
+            builder.HasOne(x => x.ProductDetails).WithOne().HasForeignKey<ProductDetails>(x => x.Id);
         }
     }
 }

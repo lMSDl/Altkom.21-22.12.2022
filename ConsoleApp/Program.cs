@@ -13,7 +13,7 @@ var contextOptions = new DbContextOptionsBuilder<Context>()
     //śledzenie zmian przez proxy
     //.UseChangeTrackingProxies()
     //LazyLoading
-    .UseLazyLoadingProxies()
+    //.UseLazyLoadingProxies()
     .LogTo(x => Console.WriteLine(x))
     .Options;
 
@@ -26,138 +26,105 @@ using (var context = new Context(contextOptions))
 Transactions(contextOptions);
 
 
-var point = new Point(52, 21) { SRID = 4326 };
 using (var context = new Context(contextOptions))
 {
-    var orders = context.Set<Order>().OrderBy(x => x.DeliveryPoint.Distance(point)).ToList();
-    var distances = context.Set<Order>().Select(x => x.DeliveryPoint.Distance(point)).ToList();
+    var products = context.Set<Product>().ToList();
 
-    var polygon = new Polygon(new LinearRing(new Coordinate[] { new Coordinate(52, 21),
-                                                                new Coordinate(51, 20),
-                                                                new Coordinate(52, 19),
-                                                                new Coordinate(53, 20),
-                                                                new Coordinate(52, 21)}))
-    { SRID = 4326 };
-
-    orders = context.Set<Order>().Where(x => polygon.Intersects(x.DeliveryPoint)).ToList();
-    orders = context.Set<Order>().Where(x => point.IsWithinDistance(x.DeliveryPoint, 125000)).ToList();
-
-}
-
-var from = DateTime.Now.AddMilliseconds(1000);
-var to = DateTime.Now.AddMilliseconds(100);
-using (var context = new Context(contextOptions))
-{
-    Console.Clear();
-    var orders = context.Set<Order>().Include(x => x.Products)
-                                    .Where(x => x.DateTime >= from)
-                                    .Where(x => x.DateTime <= to).ToList();
-}
-
-using (var context = new Context(contextOptions))
-{
-    Console.Clear();
-    var orders = Context.GetOrders(context, from, to).ToList();
-}
-
-using (var context = new Context(contextOptions))
-{
-    Console.Clear();
-    var orders = Context.GetOrders(context, from, to).ToList();
+    context.Entry(products.First()).Reference(x => x.ProductDetails).Load();
 }
 
 
-static void ChangeTacker(Context context)
+    static void ChangeTacker(Context context)
+{
+    var order = new Order();
+    var product = new Product() { Name = "Marchewka" };
+    order.Products.Add(product);
+    //order.Products.Add(context.CreateProxy<Product>(x => x.Name = "Marchewka"));
+
+
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+    context.Attach(order);
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+    context.Add(order);
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+    context.SaveChanges();
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+    order.DateTime = DateTime.Now;
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+    context.SaveChanges();
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+    context.Remove(order);
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+    context.SaveChanges();
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+    order.DateTime = DateTime.Now;
+    Console.WriteLine("Order: " + context.Entry(order).State);
+    Console.WriteLine("Product: " + context.Entry(product).State);
+
+
+    for (int i = 0; i < 3; i++)
     {
-        var order = new Order();
-        var product = new Product() { Name = "Marchewka" };
-        order.Products.Add(product);
-        //order.Products.Add(context.CreateProxy<Product>(x => x.Name = "Marchewka"));
-
-
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-
-        context.Attach(order);
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
+        order = new Order() { DateTime = DateTime.Now.AddMinutes(-i * 32) };
+        order.Products = new ObservableCollection<Product>(Enumerable.Range(1, new Random(i).Next(3, 10)).Select(x => new Product { Name = x.ToString(), Price = x }).ToList());
 
         context.Add(order);
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-        context.SaveChanges();
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-
-        order.DateTime = DateTime.Now;
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-        context.SaveChanges();
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-
-        context.Remove(order);
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-        context.SaveChanges();
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-
-        order.DateTime = DateTime.Now;
-        Console.WriteLine("Order: " + context.Entry(order).State);
-        Console.WriteLine("Product: " + context.Entry(product).State);
-
-
-        for (int i = 0; i < 3; i++)
-        {
-            order = new Order() { DateTime = DateTime.Now.AddMinutes(-i * 32) };
-            order.Products = new ObservableCollection<Product>(Enumerable.Range(1, new Random(i).Next(3, 10)).Select(x => new Product { Name = x.ToString(), Price = x }).ToList());
-
-            context.Add(order);
-        }
-
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
-        context.SaveChanges();
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
-
-        order.DateTime = DateTime.Now;
-        order.Products.First().Name = "aaa";
-
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-
-        //context.ChangeTracker.DetectChanges();
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-
-        context.Entry(order.Products.Skip(1).First()).Property(x => x.Name).CurrentValue = "bbb";
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.LongView);
-
-        context.ChangeTracker.AutoDetectChangesEnabled = false;
-
-        //AutoDetectChanges - działa w takich przypadkach jak pobranie Entries, pobranie Local albo wywołanie SaveChanges(Async)
-        context.ChangeTracker.Entries();
-        _ = context.Set<Product>().Local;
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-        Console.WriteLine("------------");
-        Console.WriteLine(context.Entry(order.Products.First()).State);
-
-
-        order.Products.Skip(2).First().Price = 12;
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-
-        order.DateTime = DateTime.Now;
-        Console.WriteLine("------------");
-        Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
-
-        context.SaveChanges();
     }
+
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.LongView);
+    context.SaveChanges();
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.LongView);
+
+    order.DateTime = DateTime.Now;
+    order.Products.First().Name = "aaa";
+
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+
+    //context.ChangeTracker.DetectChanges();
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+
+    context.Entry(order.Products.Skip(1).First()).Property(x => x.Name).CurrentValue = "bbb";
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.LongView);
+
+    context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+    //AutoDetectChanges - działa w takich przypadkach jak pobranie Entries, pobranie Local albo wywołanie SaveChanges(Async)
+    context.ChangeTracker.Entries();
+    _ = context.Set<Product>().Local;
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+    Console.WriteLine("------------");
+    Console.WriteLine(context.Entry(order.Products.First()).State);
+
+
+    order.Products.Skip(2).First().Price = 12;
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+
+    order.DateTime = DateTime.Now;
+    Console.WriteLine("------------");
+    Console.WriteLine(context.ChangeTracker.DebugView.ShortView);
+
+    context.SaveChanges();
+}
 
 static void ConcurrencyToken(DbContextOptions<Context> contextOptions)
 {
@@ -227,10 +194,13 @@ static void ConcurrencyToken(DbContextOptions<Context> contextOptions)
 
 static void Transactions(DbContextOptions<Context> contextOptions)
 {
-    var products = Enumerable.Range(100, 50).Select(x => new Product { Name = $"Product {x}"/*, Price = 1.23f * x*/ }).ToList();
-    var orders = Enumerable.Range(0, 5).Select(x => new Order() { DateTime = DateTime.Now.AddMinutes(-3.21 * x),
-                                                                    OrderType = (OrderTypes)(x % 3),
-                                                                    DeliveryPoint = new Point(52 + x, 21 - x / 10f) { SRID = 4326 }}).ToList();
+    var products = Enumerable.Range(100, 50).Select(x => new Product { Name = $"Product {x}"/*, Price = 1.23f * x*/, ProductDetails = new ProductDetails { Width = 4.56f * x, Height = 3.21f / x } }).ToList();
+    var orders = Enumerable.Range(0, 5).Select(x => new Order()
+    {
+        DateTime = DateTime.Now.AddMinutes(-3.21 * x),
+        OrderType = (OrderTypes)(x % 3),
+        DeliveryPoint = new Point(52 + x, 21 - x / 10f) { SRID = 4326 }
+    }).ToList();
 
     using (var context = new Context(contextOptions))
     {
@@ -393,5 +363,51 @@ static void View(DbContextOptions<Context> contextOptions)
     using (var context = new Context(contextOptions))
     {
         var summary = context.Set<OrdersSummary>().ToList();
+    }
+}
+
+static void CompileQuery(DbContextOptions<Context> contextOptions)
+{
+    var from = DateTime.Now.AddMilliseconds(1000);
+    var to = DateTime.Now.AddMilliseconds(100);
+    using (var context = new Context(contextOptions))
+    {
+        Console.Clear();
+        var orders = context.Set<Order>().Include(x => x.Products)
+                                        .Where(x => x.DateTime >= from)
+                                        .Where(x => x.DateTime <= to).ToList();
+    }
+
+    using (var context = new Context(contextOptions))
+    {
+        Console.Clear();
+        var orders = Context.GetOrders(context, from, to).ToList();
+    }
+
+    using (var context = new Context(contextOptions))
+    {
+        Console.Clear();
+        var orders = Context.GetOrders(context, from, to).ToList();
+    }
+}
+
+static void TopologySuite(DbContextOptions<Context> contextOptions)
+{
+    var point = new Point(52, 21) { SRID = 4326 };
+    using (var context = new Context(contextOptions))
+    {
+        var orders = context.Set<Order>().OrderBy(x => x.DeliveryPoint.Distance(point)).ToList();
+        var distances = context.Set<Order>().Select(x => x.DeliveryPoint.Distance(point)).ToList();
+
+        var polygon = new Polygon(new LinearRing(new Coordinate[] { new Coordinate(52, 21),
+                                                                new Coordinate(51, 20),
+                                                                new Coordinate(52, 19),
+                                                                new Coordinate(53, 20),
+                                                                new Coordinate(52, 21)}))
+        { SRID = 4326 };
+
+        orders = context.Set<Order>().Where(x => polygon.Intersects(x.DeliveryPoint)).ToList();
+        orders = context.Set<Order>().Where(x => point.IsWithinDistance(x.DeliveryPoint, 125000)).ToList();
+
     }
 }
