@@ -25,9 +25,44 @@ using (var context = new Context(contextOptions))
 
 Transactions(contextOptions);
 
+using (var context = new Context(contextOptions))
+{
+    var person = new Person() { Name = "Ewa Ewowska" };
+    context.Add(person);
+    context.SaveChanges();
+
+    Thread.Sleep(5000);
+
+    person.Name = string.Empty;
+    context.SaveChanges();
+
+    Thread.Sleep(5000);
+
+    person.Name = "Ala Alowska";
+    context.SaveChanges();
+
+    Thread.Sleep(5000);
+
+    context.Remove(person);
+    context.SaveChanges();
+
+}
 
 
-static void ChangeTacker(Context context)
+using (var context = new Context(contextOptions))
+{ 
+    var people = context.Set<Person>().TemporalAsOf(DateTime.UtcNow.AddSeconds(-2)).ToList();
+    people = context.Set<Person>().TemporalAsOf(DateTime.UtcNow.AddSeconds(-12)).ToList();
+
+
+    var data = context.Set<Person>().TemporalAll()
+        .Select(x => new { x, FROM = EF.Property<DateTime>(x, "Start"), TO = EF.Property<DateTime>(x, "End")})
+        .ToList();
+}
+
+
+
+    static void ChangeTacker(Context context)
 {
     var order = new Order();
     var product = new Product() { Name = "Marchewka" };
