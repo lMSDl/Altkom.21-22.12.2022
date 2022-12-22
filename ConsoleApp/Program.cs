@@ -24,21 +24,16 @@ using (var context = new Context(contextOptions))
 
 Transactions(contextOptions);
 
+//var userInput = "-1; DROP TABLE Person";
+var userInput = "-1";
 using (var context = new Context(contextOptions))
 {
-    var product = context.Set<Product>().First();
+    //context.Database.ExecuteSqlRaw("EXEC ChangePrice @p0", userInput);
+    context.Database.ExecuteSqlInterpolated($"EXEC ChangePrice {userInput}");
 
-    product.Manufacturer = new Manufacturer() { Name = "Altkom" };
-
-    product = context.Set<Product>().Skip(1).First();
-    context.Entry(product).Property("ManufacturerId").CurrentValue = 1;
-    context.SaveChanges();
-
-    var products = context.Set<Product>().Where(x => EF.Property<int?>(x, "ManufacturerId") != null).ToList();
-
+    var summary = context.Set<OrdersSummary>().FromSqlRaw("EXEC OrdersSummary @p0", 2);
 }
 
-GlobalFilters(contextOptions);
 
 
     static void ChangeTacker(Context context)
@@ -326,4 +321,23 @@ static void GlobalFilters(DbContextOptions<Context> contextOptions)
         context.Entry(product).Collection(x => x.Orders).Load();
 
     }
+}
+
+static void SHadowProperties(DbContextOptions<Context> contextOptions)
+{
+    using (var context = new Context(contextOptions))
+    {
+        var product = context.Set<Product>().First();
+
+        product.Manufacturer = new Manufacturer() { Name = "Altkom" };
+
+        product = context.Set<Product>().Skip(1).First();
+        context.Entry(product).Property("ManufacturerId").CurrentValue = 1;
+        context.SaveChanges();
+
+        var products = context.Set<Product>().Where(x => EF.Property<int?>(x, "ManufacturerId") != null).ToList();
+
+    }
+
+    GlobalFilters(contextOptions);
 }
